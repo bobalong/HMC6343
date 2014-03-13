@@ -18,67 +18,28 @@ HMC6343::HMC6343() {
 	Wire.begin();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Bearing
+/*=======================================================
+ * Returns the bearing in degress of a HMC6343 compass.
+ * Includes heading, pitch, and roll.
+ */
+void HMC6343::GetBearing(float& heading, float& pitch, float& roll) {
+	ReadCompass(HMC6343_BEARING_REG, heading, pitch, roll);
+	heading = heading/10;
+	pitch = pitch/10;
+	roll = roll/10;
+}
 
 /*=======================================================
- * Returns the heading in degress of a HMC6343 compass. 
+ * Returns the acceleration in the x,y, and z axis of a 
+ * HMC6343 compass. 
  */
-float HMC6343::GetHeading() {
-	 float heading, pitch, roll;
-	 ReadCompass(HMC6343_BEARING_REG, heading, pitch, roll);
-	 return heading/10;
-	}
+void HMC6343::GetAcceleration(float& x, float& y, float& z) {
+	ReadCompass(HMC6343_ACCELEROMETER_REG, x, y, z);
+	x /= 10;
+	y /= 10;
+	z /= 10;
+}
 
-/*=======================================================
- * Returns the pitch in degress of a HMC6343 compass. 
- */
-float HMC6343::GetPitch() {
-	 float heading, pitch, roll;
-	 ReadCompass(HMC6343_BEARING_REG, heading, pitch, roll);
-	 return pitch/10;
-	}
-
-/*=======================================================
- * Returns the roll in degress of a HMC6343 compass. 
- */
-float HMC6343::GetRoll() {
-	 float heading, pitch, roll;
-	 ReadCompass(HMC6343_BEARING_REG, heading, pitch, roll);
-	 return roll/10;
-	}
-
-
-///////////////////////////////////////////////////////////////////////////////
-// Accelerometer
-
-
-/*=======================================================
- * Returns the acceleration in the x axis of a HMC6343 compass. 
- */
-	float HMC6343::GetXAcc() {
-		float x, y, z;
-		ReadCompass(HMC6343_ACCELEROMETER_REG, x, y, z);
-		return x / 10;
-	}
-
-/*=======================================================
- * Returns the acceleration in the x axis of a HMC6343 compass. 
- */
-	float HMC6343::GetYAcc() {
-		float x, y, z;
-		ReadCompass(HMC6343_ACCELEROMETER_REG, x, y, z);
-		return y / 10;
-	}
-
-/*=======================================================
- * Returns the acceleration in the x axis of a HMC6343 compass. 
- */
-	float HMC6343::GetZAcc() {
-		float x, y, z;
-		ReadCompass(HMC6343_ACCELEROMETER_REG, x, y, z);
-		return z / 10;
-	}
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,8 +49,8 @@ float HMC6343::GetRoll() {
 /*=======================================================
  * Returns a byte from a register in the I2C device.
  *
- * @param register 	The register on the HMC6343 we want to 
- *						access.
+ * @param register 		The register on the HMC6343 we want to 
+ *				access.
  * @param v0			The first value that is returned from the HMC.
  * @param v1			The second value that is returned from the HMC.
  * @param v2			The third value that is returned from the HMC.
@@ -98,20 +59,20 @@ void HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
 	byte high, low;
 
 	// Start the communication with the I2C device
-		Wire.beginTransmission(HMC6343_ADDRESS);
+	Wire.beginTransmission(HMC6343_ADDRESS);
 
-		// Send the address of the registers we want to read
-		Wire.write(HMC6343_ACCELEROMETER_REG);
-		Wire.endTransmission();
-		Wire.requestFrom(HMC6343_ADDRESS, 6);
+	// Send the address of the registers we want to read
+	Wire.write(HMC6343_ACCELEROMETER_REG);
+	Wire.endTransmission();
+	Wire.requestFrom(HMC6343_ADDRESS, 6);
 
 	 // Wait for the data
-		while(Wire.available() < 1);
+	while(Wire.available() < 1);
 
-		// Read the data
-		v0 = ReadValue();
-		v1 = ReadValue();
-		v2 = ReadValue();
+	// Read the data
+	v0 = ReadValue();
+	v1 = ReadValue();
+	v2 = ReadValue();
 }
 
 /*=======================================================
@@ -122,7 +83,7 @@ float HMC6343::ReadValue() {
 	byte high, low;
 
 	 high = Wire.read();
-			low = Wire.read();
+	low = Wire.read();
 
 	return CombineByte(high, low);
 }

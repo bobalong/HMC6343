@@ -20,12 +20,8 @@
  class HMC6343 {
  public:
  	HMC6343();
- 	float GetHeading();
- 	float GetPitch();
- 	float GetRoll();
- 	float GetXAcc();
- 	float GetYAcc();
- 	float GetZAcc();
+	void GetBearing(float& heading, float& pitch, float& roll);
+	void GetAcceleration(float& accX, float& accY, float& accZ);
  private:
  	void ReadCompass(byte register, float& v0, float& v1, float& v2 );
  	float ReadValue();
