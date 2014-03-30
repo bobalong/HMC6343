@@ -32,7 +32,7 @@
 	// Member Fields               											 
 	//*******************************************************************************//
 public:
-	int TimeOut = 30;		// The max amount of time to wait around for valid
+	int TimeOut;			// The max amount of time to wait around for valid
 					// data before giving up in milliseconds.
  };
 

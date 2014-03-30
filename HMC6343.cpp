@@ -18,13 +18,15 @@
 */
 HMC6343::HMC6343() {
 	Wire.begin();
+	TimeOut = 30;
 }
 
 /*=======================================================
 * Determines if the compass is function correctly.
 */
 bool HMC6343::IsFunctioning() {
-	if(ReadCompass == Null)
+	float x, y, z;
+	if(ReadCompass(HMC6343_BEARING_REG, x, y, z))
 		return false;
 	return true;
 }
@@ -75,12 +77,12 @@ bool HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
 	Wire.endTransmission();
 	Wire.requestFrom(HMC6343_ADDRESS, 6);
 
-	float startTime = milis();
+	float startTime = millis();
 
 	bool gettingData = false;
 	 // Wait for the data
-	while(Wire.available() < 1 && startTime > milis - TimeOut && !gettingData) {
-		if(Wire.available > 0) {
+	while(Wire.available() < 1 && startTime > millis() - TimeOut && !gettingData) {
+		if(Wire.available() > 0) {
 			gettingData = true;
 		}
 	}
