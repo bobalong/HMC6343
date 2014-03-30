@@ -12,10 +12,21 @@
 #include "Wire.h"
 #include "HMC6343.h"
 
+ #define Null 0
+
 /*=======================================================
 */
 HMC6343::HMC6343() {
 	Wire.begin();
+}
+
+/*=======================================================
+* Determines if the compass is function correctly.
+*/
+bool HMC6343::IsFunctioning() {
+	if(ReadCompass == Null)
+		return false;
+	return true;
 }
 
 /*=======================================================
@@ -40,8 +51,6 @@ void HMC6343::GetAcceleration(float& x, float& y, float& z) {
 	z /= 10;
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // HMC6343 interaction
 
@@ -55,7 +64,7 @@ void HMC6343::GetAcceleration(float& x, float& y, float& z) {
  * @param v1			The second value that is returned from the HMC.
  * @param v2			The third value that is returned from the HMC.
  */
-void HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
+bool HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
 	byte high, low;
 
 	// Start the communication with the I2C device
@@ -66,13 +75,26 @@ void HMC6343::ReadCompass(byte register, float& v0, float& v1, float& v2 ) {
 	Wire.endTransmission();
 	Wire.requestFrom(HMC6343_ADDRESS, 6);
 
+	float startTime = milis();
+
+	bool gettingData = false;
 	 // Wait for the data
-	while(Wire.available() < 1);
+	while(Wire.available() < 1 && startTime > milis - TimeOut && !gettingData) {
+		if(Wire.available > 0) {
+			gettingData = true;
+		}
+	}
+
+	if(!gettingData) {
+		return false;
+	}
 
 	// Read the data
 	v0 = ReadValue();
 	v1 = ReadValue();
 	v2 = ReadValue();
+
+	return true;
 }
 
 /*=======================================================

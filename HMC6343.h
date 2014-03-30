@@ -20,12 +20,20 @@
  class HMC6343 {
  public:
  	HMC6343();
+ 	bool IsFunctioning();
 	void GetBearing(float& heading, float& pitch, float& roll);
 	void GetAcceleration(float& accX, float& accY, float& accZ);
  private:
- 	void ReadCompass(byte register, float& v0, float& v1, float& v2 );
+ 	bool ReadCompass(byte register, float& v0, float& v1, float& v2 );
  	float ReadValue();
  	float CombineByte(byte high, byte low);
+
+ 	//*******************************************************************************//
+	// Member Fields               											 
+	//*******************************************************************************//
+public:
+	int TimeOut = 30;		// The max amount of time to wait around for valid
+					// data before giving up in milliseconds.
  };
 
  #endif
